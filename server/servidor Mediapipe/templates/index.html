@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>INTELLECTA ACADEMY — Detección de Gestos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap"
+    rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --rainbow: #00d7ff;
+      --off: #0032d2;
+      --blue: #ff0000;
+      --like: #00ffff;
+      --spiderman: #0000ff;
+      --ian: #0032ff;
+      --daviet: #ff6400;
+      --cesar: #00ff00;
+      --none: #555;
+      --bg: #0d0f14;
+      --card: #161a24;
+      --border: #252a38;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px 60px;
+      gap: 18px;
+    }
+
+    /* ---- Header ---- */
+    header { text-align: center; }
+
+    .academy {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: #4b5563;
+      margin-bottom: 4px;
+    }
+
+    header h1 {
+      font-size: clamp(1.4rem, 3.5vw, 2rem);
+      font-weight: 900;
+      background: linear-gradient(135deg, #a78bfa, #60a5fa);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      color: #6b7280;
+      font-size: 0.85rem;
+      margin-top: 3px;
+    }
+
+    /* ---- Summary bar ---- */
+    .bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .pill {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 5px 14px;
+      font-size: 0.78rem;
+      color: #9ca3af;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill .val {
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* ---- Main layout ---- */
+    .layout {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* ---- Video wall (HIDING CAUSE STREAMING IS DISABLED) ---- */
+    .video-wall {
+      display: none;
+    }
+
+    /* ---- Right: device cards ---- */
+    .right {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+      max-height: 80vh;
+    }
+
+    .device-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 12px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color .3s, box-shadow .3s;
+    }
+
+    .device-card.rainbow { border-color: rgba(0, 215, 255, .5); box-shadow: 0 0 12px rgba(0, 215, 255, .1); }
+    .device-card.off { border-color: rgba(0, 50, 210, .5); box-shadow: 0 0 12px rgba(0, 50, 210, .1); }
+    .device-card.blue { border-color: rgba(255, 0, 0, .5); box-shadow: 0 0 12px rgba(255, 0, 0, .1); }
+    .device-card.like { border-color: rgba(0, 255, 255, .5); box-shadow: 0 0 12px rgba(0, 255, 255, .1); }
+    .device-card.spiderman { border-color: rgba(0, 0, 255, .5); box-shadow: 0 0 12px rgba(0, 0, 255, .1); }
+    .device-card.ian { border-color: rgba(0, 50, 255, .5); box-shadow: 0 0 12px rgba(0, 50, 255, .1); }
+    .device-card.daviet { border-color: rgba(255, 100, 0, .5); box-shadow: 0 0 12px rgba(255, 100, 0, .1); }
+    .device-card.cesar { border-color: rgba(0, 255, 0, .5); box-shadow: 0 0 12px rgba(0, 255, 0, .1); }
+
+    .dev-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #e5e7eb;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .gesture-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gesture-icon { font-size: 1.5rem; }
+
+    .gesture-badge {
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: #1c2030;
+      color: var(--none);
+      transition: background .25s, color .25s;
+    }
+
+    .gesture-badge.rainbow { background: rgba(0, 215, 255, .15); color: var(--rainbow); }
+    .gesture-badge.off { background: rgba(0, 50, 210, .15); color: var(--off); }
+    .gesture-badge.blue { background: rgba(255, 0, 0, .15); color: var(--blue); }
+    .gesture-badge.like { background: rgba(0, 255, 255, .15); color: var(--like); }
+    .gesture-badge.spiderman { background: rgba(0, 0, 255, .15); color: var(--spiderman); }
+    .gesture-badge.ian { background: rgba(0, 50, 255, .15); color: var(--ian); }
+    .gesture-badge.daviet { background: rgba(255, 100, 0, .15); color: var(--daviet); }
+    .gesture-badge.cesar { background: rgba(0, 255, 0, .15); color: var(--cesar); }
+
+    .dev-ip {
+      font-size: 0.62rem;
+      color: #374151;
+    }
+
+    /* ---- Empty state ---- */
+    .empty {
+      text-align: center;
+      padding: 50px 20px;
+      color: #374151;
+      display: none;
+    }
+
+    .empty.visible { display: block; }
+    .empty .icon { font-size: 2.5rem; margin-bottom: 8px; opacity: .35; }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="academy">INTELLECTA ACADEMY</div>
+    <h1>Detección de Gestos</h1>
+    <p>Multi-dispositivo &mdash; cada ESP32 actúa de forma independiente</p>
+  </header>
+
+  <div class="bar">
+    <div class="pill">📡 Cám. Online <span class="val" id="cnt-dev">0</span></div>
+    <div class="pill">✋ Arcoiris <span class="val" id="cnt-rainbow" style="color:var(--rainbow)">0</span></div>
+    <div class="pill">✊ Apagada <span class="val" id="cnt-off" style="color:var(--off)">0</span></div>
+    <div class="pill">✌️ Azul <span class="val" id="cnt-blue" style="color:var(--blue)">0</span></div>
+    <div class="pill">👍 Like <span class="val" id="cnt-like" style="color:var(--like)">0</span></div>
+    <div class="pill">🤟 Spider <span class="val" id="cnt-spiderman" style="color:var(--spiderman)">0</span></div>
+    <div class="pill">🤙 Ian <span class="val" id="cnt-ian" style="color:var(--ian)">0</span></div>
+    <div class="pill">🤘 Daviet <span class="val" id="cnt-daviet" style="color:var(--daviet)">0</span></div>
+    <div class="pill">👌 Cesar <span class="val" id="cnt-cesar" style="color:var(--cesar)">0</span></div>
+  </div>
+
+  <div class="layout">
+
+    <!-- VIDEO WALL: todas las cámaras en un solo stream -->
+    <div class="video-wall">
+      <div class="vw-header">📷 Video en vivo — todas las cámaras con MediaPipe</div>
+      <img src="/video_wall" alt="Video wall" id="wall-img" />
+    </div>
+
+    <!-- PANEL DERECHO: tarjetas de estado por dispositivo -->
+    <div class="right" id="right">
+      <div class="empty visible" id="empty">
+        <div class="icon">📡</div>
+        <p>Esperando conexión…</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const cntDev  = document.getElementById("cnt-dev");
+    const DOM_COUNTS = {
+        rainbow: document.getElementById("cnt-rainbow"),
+        off: document.getElementById("cnt-off"),
+        blue: document.getElementById("cnt-blue"),
+        like: document.getElementById("cnt-like"),
+        spiderman: document.getElementById("cnt-spiderman"),
+        ian: document.getElementById("cnt-ian"),
+        daviet: document.getElementById("cnt-daviet"),
+        cesar: document.getElementById("cnt-cesar"),
+    };
+    const right   = document.getElementById("right");
+    const empty   = document.getElementById("empty");
+
+    // Gestos personalizados (Agregados según tu configuración)
+    const LABELS = {
+        rainbow: "ARCOIRIS", off: "APAGADA", blue: "AZUL",
+        like: "LIKE (Thiago)", spiderman: "SPIDER MAN (JP)",
+        ian: "IAN", daviet: "DAVIET", cesar: "CESAR (OK)",
+        ninguno: "—"
+    };
+
+    const ICONS  = {
+        rainbow: "✋", off: "✊", blue: "✌️",
+        like: "👍", spiderman: "🤟",
+        ian: "🤙", daviet: "🤘", cesar: "👌",
+        ninguno: "👋"
+    };
+
+    const cache = {};
+
+    function getOrCreate(dev) {
+      if (cache[dev.name]) return cache[dev.name];
+
+      const card = document.createElement("div");
+      card.className = "device-card";
+      card.innerHTML = `
+        <div class="dev-name">${dev.name}</div>
+        <div class="gesture-row">
+          <span class="gesture-icon" id="icon-${dev.name}">👋</span>
+          <span class="gesture-badge" id="badge-${dev.name}">—</span>
+        </div>
+        <div class="dev-ip" id="ip-${dev.name}">${dev.ip}</div>
+      `;
+      right.appendChild(card);
+      cache[dev.name] = {
+        card,
+        icon:  card.querySelector(`#icon-${dev.name}`),
+        badge: card.querySelector(`#badge-${dev.name}`),
+        ipEl:  card.querySelector(`#ip-${dev.name}`),
+      };
+      return cache[dev.name];
+    }
+
+    function removeCard(name) {
+      const el = cache[name];
+      if (!el) return;
+      el.card.remove();
+      delete cache[name];
+    }
+
+    async function poll() {
+      try {
+        const res  = await fetch("/cam_status");
+        const list = await res.json();
+
+        const active = new Set(list.map(d => d.name));
+        Object.keys(cache).forEach(n => { if (!active.has(n)) removeCard(n); });
+
+        let counts = { rainbow: 0, off: 0, blue: 0, like: 0, spiderman: 0, ian: 0, daviet: 0, cesar: 0 };
+        list.forEach(dev => {
+          const g = dev.gesture || "ninguno";
+          const { card, icon, badge, ipEl } = getOrCreate(dev);
+
+          card.className    = "device-card" + (g !== "ninguno" ? " " + g : "");
+          icon.textContent  = ICONS[g]  ?? "👋";
+          badge.textContent = LABELS[g] ?? "—";
+          badge.className   = "gesture-badge " + (g !== "ninguno" ? g : "");
+          ipEl.textContent  = dev.ip;
+
+          if (g in counts) counts[g]++;
+        });
+
+        cntDev.textContent  = list.length;
+        Object.keys(counts).forEach(k => { if (DOM_COUNTS[k]) DOM_COUNTS[k].textContent = counts[k]; });
+        empty.classList.toggle("visible", list.length === 0);
+
+      } catch(e) { /* servidor no responde */ }
+
+      setTimeout(poll, 400);
+    }
+
+    poll();
+  </script>
+</body>
+
+</html>
