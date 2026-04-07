@@ -1,0 +1,247 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* =========================================================
+   Variables y reset
+   ========================================================= */
+:root {
+  --bg:         #0d0f14;
+  --surface:    #161a22;
+  --surface2:   #1e2430;
+  --border:     #2a3040;
+  --accent:     #3b82f6;
+  --accent-glow:#3b82f640;
+  --green:      #22c55e;
+  --red:        #ef4444;
+  --text:       #e2e8f0;
+  --text-muted: #64748b;
+  --radius:     14px;
+  --shadow:     0 8px 32px #00000060;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================================================
+   Header
+   ========================================================= */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #0d0f14e0;
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+
+.logo .icon { font-size: 1.5rem; }
+.logo .title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  color: var(--text-muted);
+  font-size: .875rem;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: background .3s, box-shadow .3s;
+}
+.dot.active {
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+}
+
+/* =========================================================
+   Main / Grid
+   ========================================================= */
+main {
+  flex: 1;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.hidden { display: none !important; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+  gap: 1.25rem;
+}
+
+/* =========================================================
+   Camera Card
+   ========================================================= */
+.cam-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  transform: translateY(16px) scale(.97);
+  transition: opacity .4s ease, transform .4s ease, border-color .3s;
+}
+.cam-card.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.cam-card.removing {
+  opacity: 0;
+  transform: scale(.95);
+  transition: opacity .3s, transform .3s;
+}
+.cam-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow), 0 0 0 1px var(--accent-glow);
+}
+
+.cam-header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+.cam-name {
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -.01em;
+}
+.cam-ip {
+  font-size: .8rem;
+  color: var(--text-muted);
+  font-family: monospace;
+  margin-right: auto;
+}
+
+.live-badge {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--green);
+  background: #22c55e18;
+  border: 1px solid #22c55e30;
+  padding: .15rem .5rem;
+  border-radius: 999px;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .5; }
+}
+
+.cam-video-wrap {
+  position: relative;
+  aspect-ratio: 4/3;
+  background: #0a0c10;
+}
+.cam-video-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: filter .3s;
+}
+.cam-video-wrap img.error { filter: brightness(.2); }
+.cam-video-wrap img.error ~ .overlay-error { opacity: 1; }
+
+.overlay-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--red);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s;
+  background: #ef444410;
+}
+
+.cam-footer {
+  padding: .65rem 1rem;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+}
+.btn-open {
+  font-size: .8rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity .2s;
+}
+.btn-open:hover { opacity: .75; }
+
+/* =========================================================
+   Empty State
+   ========================================================= */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  min-height: 60vh;
+  text-align: center;
+  color: var(--text-muted);
+}
+.empty-icon { font-size: 4rem; filter: grayscale(1); opacity: .4; }
+.empty-state h2 { color: var(--text); font-size: 1.4rem; font-weight: 600; }
+.empty-state p { font-size: .95rem; }
+.empty-state .hint {
+  font-size: .8rem;
+  max-width: 380px;
+  line-height: 1.6;
+  margin-top: .25rem;
+  color: #475569;
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+  .logo .title { font-size: 1rem; }
+}

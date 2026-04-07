@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ESP32-CAM Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <span class="icon">&#128247;</span>
+        <span class="title">ESP32-CAM Dashboard</span>
+      </div>
+      <div class="status-bar">
+        <span id="cam-count">0 cámaras activas</span>
+        <span class="dot" id="dot"></span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="grid" class="grid"></div>
+    <div id="empty-state" class="empty-state hidden">
+      <div class="empty-icon">&#128247;</div>
+      <h2>Sin cámaras conectadas</h2>
+      <p>Esperando que los ESP32-CAM se registren...</p>
+      <p class="hint">Asegúrate de que los ESP32 estén encendidos y configurados con la IP de este servidor.</p>
+    </div>
+  </main>
+
+  <script>
+    const grid = document.getElementById("grid");
+    const emptyState = document.getElementById("empty-state");
+    const camCountEl = document.getElementById("cam-count");
+    const dot = document.getElementById("dot");
+
+    let knownCameras = {};
+
+    async function fetchCameras() {
+      try {
+        const res = await fetch("/cameras");
+        const cameras = await res.json();
+
+        dot.classList.add("active");
+        setTimeout(() => dot.classList.remove("active"), 400);
+
+        const currentNames = new Set(cameras.map(c => c.name));
+
+        // Agregar nuevas camaras
+        for (const cam of cameras) {
+          if (!knownCameras[cam.name]) {
+            addCameraCard(cam);
+            knownCameras[cam.name] = cam;
+          }
+        }
+
+        // Remover camaras que ya no estan activas
+        for (const name of Object.keys(knownCameras)) {
+          if (!currentNames.has(name)) {
+            removeCameraCard(name);
+            delete knownCameras[name];
+          }
+        }
+
+        const count = cameras.length;
+        camCountEl.textContent = `${count} cámara${count !== 1 ? "s" : ""} activa${count !== 1 ? "s" : ""}`;
+
+        if (count === 0) {
+          emptyState.classList.remove("hidden");
+          grid.classList.add("hidden");
+        } else {
+          emptyState.classList.add("hidden");
+          grid.classList.remove("hidden");
+        }
+
+      } catch (err) {
+        console.error("Error al obtener camaras:", err);
+      }
+    }
+
+    function addCameraCard(cam) {
+      const card = document.createElement("div");
+      card.className = "cam-card";
+      card.id = `card-${cam.name}`;
+
+      const streamUrl = `http://${cam.ip}:81/stream`;
+
+      card.innerHTML = `
+        <div class="cam-header">
+          <span class="cam-name">${cam.name}</span>
+          <span class="cam-ip">${cam.ip}</span>
+          <span class="live-badge">● LIVE</span>
+        </div>
+        <div class="cam-video-wrap">
+          <img
+            src="${streamUrl}"
+            alt="Stream ${cam.name}"
+            onerror="this.classList.add('error')"
+            onload="this.classList.remove('error')"
+          />
+          <div class="overlay-error">Sin señal</div>
+        </div>
+        <div class="cam-footer">
+          <a href="${streamUrl}" target="_blank" class="btn-open">Abrir stream completo ↗</a>
+        </div>
+      `;
+
+      grid.appendChild(card);
+
+      // Animacion de entrada
+      requestAnimationFrame(() => card.classList.add("visible"));
+    }
+
+    function removeCameraCard(name) {
+      const card = document.getElementById(`card-${name}`);
+      if (card) {
+        card.classList.add("removing");
+        card.addEventListener("transitionend", () => card.remove(), { once: true });
+      }
+    }
+
+    // Polling cada 3 segundos
+    fetchCameras();
+    setInterval(fetchCameras, 3000);
+  </script>
+</body>
+</html>
